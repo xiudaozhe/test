@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>第二题</title>
+        <style>
+            *{
+                padding: 0;
+                margin: 0;
+            }
+            /*#canvas{width: 100%;height: 100%}*/
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width="1200" height="600"></canvas>
+        <script>
+            let canvas = document.getElementById('canvas'),
+                ctx = canvas.getContext('2d')
+
+            let list = []       //矩形列表
+            let slist = []      //小举行列表
+            let nowLoc = []     //当前十字中心
+            //数据记录
+            for(let i=0;i<20;i++){
+                var {y,h,color} = randRect()
+                var x = list.length>0?list[list.length-1].x + 40:40
+                let sx = x+9
+                let sh = randNum(h,300)
+                let sy = randNum(y-sh,y+h)
+                list.push({x,y,h,color})
+                slist.push({sx,sy,sh,color})
+            }
+            drawAll()
+
+            //绘制虚线
+            canvas.onmousemove = function (e) {
+                nowLoc = windowToCanvas(canvas,e.clientX,e.clientY)
+                drawAll()
+            }
+
+            //键盘移动
+            window.onkeydown = function (e) {
+                var left = null,right = null
+                for(let i = 0;i<list.length;i++){
+                    if(list[i].x+10 < nowLoc.x){
+                        left = list[i].x+10
+                    }else if(list[i].x+10 > nowLoc.x){
+                        right = list[i].x+10
+                        break
+                    }else{
+                        if(i>0){
+                            left = list[i-1].x+10
+                        }
+                        if(i<list.length-1){
+                            right = list[list.length-1].x
+                        }else{
+                            right = null
+                        }
+                        console.log(i)
+                        console.log(right)
+                    }
+                }
+
+                if(e.keyCode === 37){
+                    if(left!==null){
+                        nowLoc.x = left
+                    }
+                    drawAll()
+                }else if(e.keyCode === 39){
+                    console.log(right)
+                    if(right!==null){
+                        nowLoc.x = right
+                    }
+                    drawAll()
+                }
+            }
+
+
+            function drawAll(){
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+                //画矩形
+                list.forEach(function({x,y,h,color},index){
+                    drawRect(x,y,20,h,color)
+                    let t = slist[index]
+                    drawRect(t.sx,t.sy,2,t.sh,t.color)
+                })
+
+                //画线条
+                ctx.strokeStyle = '#e6c7ff';
+                ctx.lineWidth = 2; // 设置线段宽度
+                ctx.beginPath(); // 开始点
+                ctx.moveTo(0, 50);
+                for(let i =0;i<list.length;i++){
+                    let lx = list[i].x
+                    let basey = list[i].y + list[i].h/2
+                    let ly = basey+100
+                    ctx.lineTo(lx, ly);
+                }
+                ctx.stroke(); // 进行绘制外边框
+
+
+                ctx.strokeStyle = '#333'
+                ctx.lineWidth = 0.5
+                drawVerticalLine(nowLoc.x);
+                drawHorizontalLine(nowLoc.y);
+            }
+
+            //画矩形
+            function drawRect(x,y,w,h,color){
+                ctx.beginPath()
+                ctx.fillStyle=color;
+                ctx.rect(x,y,w,h);
+                ctx.fill();
+                ctx.closePath()
+            }
+
+            //随机y坐标、高、颜色
+            function randRect(){
+                const colors = ['red','green']
+                let y = Math.ceil(Math.random()*400);
+                let h = Math.ceil(Math.random()*300);
+                let color = colors[Math.round(Math.random())]
+                return {y,h,color}
+            }
+
+            //随机数区间
+            function randNum(min,max){
+                return parseInt(Math.random()*(max-min+1)+min,10);
+            }
+
+            //画线段
+            function drawLine(x1,y1,x2,y2){
+                context.strokeStyle = '#e6c7ff';
+                context.lineWidth = 2; // 设置线段宽度
+                context.beginPath(); // 开始点
+                context.moveTo(30, 30);
+                context.lineTo(230, 30);
+                context.lineTo(230, 200);
+                context.stroke(); // 进行绘制外边框
+            }
+
+            function windowToCanvas(canvas,x,y) {
+                var bbox  = canvas.getBoundingClientRect()
+                return {
+                    x:x-bbox.left*(canvas.width/bbox.width),
+                    y:y-bbox.top*(canvas.height/bbox.height)
+                }
+            }
+
+            //画竖线
+            function drawVerticalLine(x){
+                ctx.beginPath()
+                ctx.moveTo(x+0.5,0)
+                ctx.lineTo(x+0.5,ctx.canvas.height)
+                ctx.stroke()
+                ctx.closePath();
+            }
+
+            //画横线
+            function drawHorizontalLine(y){
+                ctx.beginPath()
+                ctx.moveTo(0,y+0.5)
+                ctx.lineTo(ctx.canvas.width,y+0.5)
+                ctx.stroke()
+                ctx.closePath();
+            }
+        </script>
+    </body>
+</html>

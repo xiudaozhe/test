@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<title>第一题</title>
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+<style>
+    *{
+        padding: 0;
+        margin: 0;
+    }
+</style>
+<body>
+<div id="app">
+    <div>
+        <el-table
+                ref="singleTable"
+                :data="tableData"
+                style="width: 100%;"
+                :row-style="tableRowStyle"
+                :header-cell-style="tableHeaderColor"
+                :cell-style="cellStyle"
+                highlight-current-row
+                @current-change="handleCurrentChange"
+        >
+            <el-table-column
+                    type="index"
+                    label="序号"
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="name"
+                    label="名称"
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="code"
+                    label="代码">
+            </el-table-column>
+            <el-table-column
+                    prop="zhangfu"
+                    label="涨幅"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="nowprice"
+                    label="现价"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="zhangdie"
+                    label="涨跌"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="chengjiaoliang"
+                    label="成交量">
+            </el-table-column>
+            <el-table-column
+                    prop="chengjiaoe"
+                    label="成交额"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="zhangsu"
+                    label="涨速"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="huanshou"
+                    label="换手"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="liangbi"
+                    label="量比"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="jinkai"
+                    label="今开"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="zuigao"
+                    label="最高"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="zuidi"
+                    label="最低"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="zuoshou"
+                    label="昨收"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="shiyinglv"
+                    label="市盈率"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="zhengfu"
+                    label="振幅"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="weicha"
+                    label="尾差"
+                    sortable
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="weibi"
+                    label="委比"
+                    sortable
+            >
+            </el-table-column>
+        </el-table>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    const info = {
+        name: 'xx银行',
+        code: 'xxxx',
+        zhangfu: 'ss',
+        nowprice: '222',
+        zhangdie: '22',
+        chengjiaoliang: '22',
+        chengjiaoe: '2122',
+        zhangsu: 11,
+        huanshou: 22,
+        liangbi: 222,
+        jinkai: 222,
+        zuigao: 22,
+        zuidi: 22,
+        zuoshou: 222,
+        shiyinglv: 222,
+        zhengfu: 22,
+        weicha: 22,
+        weibi: 88
+    }
+
+    new Vue({
+        el: '#app',
+        data: {
+            tableData: [],
+            index: 0,
+            canload: true,
+            nowChoose: 0,
+            tableRowStyle: {
+                background:'#1c2435'
+            },
+            tableHeaderColor:{
+                background:'#1c2435',
+                color:'#787f8d'
+            }
+        },
+        created: function () {
+            this.loadList()
+            let that = this
+            window.onscroll = function() {
+                var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                var windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+                var scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+                if ((scrollHeight - scrollTop - windowHeight < 100)  && that.canload) {
+                    that.canload = false;
+                    that.loadList()
+                }
+            }
+
+            window.onkeydown = function (e) {
+                if(e.keyCode===38){
+                    that.nowChoose--
+                    that.$refs.singleTable.setCurrentRow(that.tableData[that.nowChoose]);
+                }else if(e.keyCode == 40){
+                    that.nowChoose++
+                    that.$refs.singleTable.setCurrentRow(that.tableData[that.nowChoose]);
+                }
+            }
+        },
+        methods:{
+            loadList() {
+                if(this.index < 3000){
+                    for(let i=0;i<50;i++){
+                        var t = {...info}
+                        t.id = this.index+i
+                        this.tableData.push(t)
+                    }
+                    this.index += 50;
+
+                    this.$nextTick(()=>{
+                        this.canload = true
+                    })
+                }
+            },
+            handleCurrentChange(e){
+                this.nowChoose = e.id
+                console.log(this.nowChoose)
+            },
+            cellStyle({row, column, rowIndex, columnIndex}){
+                if(columnIndex === 6 || columnIndex == 7){
+                    return {
+                        color:'#dc8e0e'
+                    }
+                }else{
+                    return {
+                        color:'#fff'
+                    }
+                }
+            }
+
+        }
+    })
+
+
+
+</script>
+</body>
+</html>
